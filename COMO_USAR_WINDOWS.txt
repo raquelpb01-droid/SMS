@@ -1,0 +1,27 @@
+SMART BINS - GUIA PARA WINDOWS
+
+1. Instale Python 3.12 para Windows em https://www.python.org/downloads/windows/
+   Marque "Add python.exe to PATH" e instale o Python Launcher.
+2. Clique com o botao direito no ZIP recebido e selecione "Extrair tudo".
+   Nao execute o programa dentro do ZIP. Prefira uma pasta como Documentos\SmartBins.
+3. Abra a pasta SMS extraida e de dois cliques em INICIAR_WINDOWS.bat.
+4. Aguarde a instalacao das bibliotecas (internet necessaria na primeira vez).
+5. O navegador deve abrir o aplicativo. Caso nao abra, digite no navegador:
+   http://localhost:8501
+   Este endereco funciona no seu computador enquanto a janela estiver aberta.
+6. Para encerrar, feche a janela de comandos. Os dados continuam salvos.
+   Para iniciar novamente, de dois cliques no mesmo arquivo BAT.
+
+APRESENTACAO
+- Na Visao geral, marque a confirmacao de restauracao dos dados.
+- Cenario A: retirada de 5 parafusos, massa liquida 190 g e saldo 95.
+- Cenario B: reposicao de 20 arruelas, massa liquida 22 g e saldo 220.
+- Cada cenario apaga os dados do cenario anterior para uma demonstracao independente.
+- No cenario D, abra Integracao SAP, recupere a conexao e reprocessse a fila.
+- Use o menu lateral para acessar as seis paginas.
+- Para usar sua foto, abra Almoxarifado inteligente e edite o cadastro.
+- O peso cadastrado e ficticio e editavel; a foto nao determina o peso.
+
+Se a porta 8501 estiver ocupada, feche a outra janela do Smart Bins antes de iniciar.
+Este e um prototipo com sensores, reconhecimento facial e SAP simulados.
+Prepare e teste a instalacao hoje para evitar depender da internet na apresentacao.
