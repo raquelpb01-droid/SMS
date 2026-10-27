@@ -29,13 +29,15 @@ O banco `data/smartbins.db` é criado automaticamente no diretório de execuçã
 ```text
 SMS/
 ├── app.py                   # Seis páginas Streamlit, cadastro e importação de fotos
-├── requirements.txt         # Streamlit e pandas
+├── requirements.txt         # Streamlit, pandas e Altair
 ├── smartbins/
 │   ├── __init__.py
-│   └── core.py              # Simulador, middleware, persistência e adaptador SAP
+│   ├── core.py              # Simulador, middleware, persistência e adaptador SAP
+│   └── presentation.py      # Gráficos e contraste visual
 ├── assets/
 │   ├── screw.svg            # Ilustração demonstrativa, não fotografia real
-│   └── washer.svg
+│   ├── washer.svg
+│   └── theme.css            # Identidade visual e ajustes responsivos
 ├── tests/
 │   ├── test_core.py         # Cinco cenários e regras de segurança
 │   └── test_ui.py           # Execução das seis páginas e cenário pela interface
@@ -117,3 +119,11 @@ Os testes usam bancos temporários e não apagam os dados do aplicativo. Cobrem 
 **Hipóteses industriais ainda não verificadas:** capacidade/resolução da célula de carga e HX711; calibração e linearidade; ruído elétrico e vibração; temperatura, deriva, tara e cargas excêntricas; dispersão da massa entre peças; distinção entre toque, retirada e reposição simultânea; caixas com material misturado; conectividade e segurança de ESP32; sincronização de relógios; correlação real de acesso facial com zona e horário; integração transacional com SAP e configuração de tipos de movimento reais. Para arruelas de **0,1 g**, a confiabilidade física depende expressamente de calibração e ensaios com sensores reais; a simulação não prova que o hardware terá resolução suficiente.
 
 O protótipo é destinado a demonstração local, com um fluxo operacional por vez. Não implementa autenticação, controle de permissões, redundância, transporte MQTT, trilha inviolável, disponibilidade industrial nem transações distribuídas. Fotos são locais, não serviços de reconhecimento. Uma implantação real precisa de testes, análise de risco operacional e adaptador SAP homologado. Não foram medidos ganhos reais de produtividade ou acuracidade industrial.
+
+## Identidade visual do protótipo
+
+A interface utiliza a paleta aproximada fornecida para o estudo de caso: vermelho `#D32F35`, azul `#3475AD`, grafite `#151515`, branco `#FFFFFF` e cinza `#F4F6F8`. Verde identifica entradas e vermelho identifica saídas, com rótulos textuais para não depender apenas da cor. Não é um produto oficial da SMS Group e não utiliza seu logotipo.
+
+O tema claro está em `.streamlit/config.toml` e os ajustes visuais em `assets/theme.css`. Preserve esses arquivos ao copiar ou exportar o projeto e execute o Streamlit na raiz do repositório para carregar a configuração. Cartões, campos e tabelas usam superfícies claras com texto escuro; a navegação se recolhe e os indicadores/botões se reorganizam em telas estreitas. As tabelas mantêm rolagem interna para preservar todas as colunas.
+
+A revisão foi conferida em Chromium nas seis páginas, em larguras de 1440 e 390 pixels, incluindo cadastro expandido, histórico preenchido e cenários simulados em banco temporário. Os 15 testes funcionais existentes passaram. Essa conferência não substitui testes de acessibilidade completos em todos os navegadores e dispositivos.

@@ -1,0 +1,92 @@
+/* Paleta acadêmica inspirada na referência fornecida; sem marca oficial. */
+:root {
+  --sb-blue: #3475AD;
+  --sb-red: #D32F35;
+  --sb-ink: #151515;
+  --sb-muted: #495563;
+  --sb-green: #1E7548;
+}
+.stApp { background: #F4F6F8; color: var(--sb-ink); }
+[data-testid="stHeader"] { background: #F4F6F8; }
+.block-container { max-width: 1440px; padding-top: 5rem; padding-bottom: 3rem; }
+h1, h2, h3, h4 { color: var(--sb-ink); letter-spacing: -.025em; }
+h1 { font-size: clamp(1.8rem, 4vw, 2.7rem); }
+h2 { font-size: clamp(1.35rem, 3vw, 1.8rem); }
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p { color: var(--sb-muted); }
+.sb-brand {
+  padding: 1.4rem 1.6rem; background: #FFFFFF; color: #151515;
+  border: 1px solid #D8DFE6; border-top: 5px solid #D32F35;
+  border-radius: 10px; margin-bottom: 1rem;
+}
+.sb-brand h1 { margin: 0; padding: 0; font-weight: 800; }
+.sb-subtitle { color: #245C88; font-size: clamp(1rem, 2.4vw, 1.3rem); font-weight: 600; margin: .35rem 0; }
+.sb-context { color: #495563; font-size: .9rem; margin: .35rem 0; }
+.sb-notice { color: #495563; font-size: .85rem; margin: .8rem 0 0; line-height: 1.6; }
+[data-testid="stSidebar"] { background: #FFFFFF; border-right: 1px solid #D8DFE6; }
+[data-testid="stSidebar"] h1 { color: #245C88; font-size: 1.65rem; }
+[data-testid="stSidebar"] [role="radiogroup"] label {
+  border-radius: 6px; padding: .55rem .65rem; margin-bottom: .2rem; color: #151515;
+}
+[data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) {
+  background: #E6EFF7; color: #245C88; box-shadow: inset 3px 0 #3475AD;
+}
+[data-testid="stMetric"], [data-testid="stForm"],
+[data-testid="stVerticalBlockBorderWrapper"] > div,
+[data-testid="stExpander"] {
+  background: #FFFFFF; border-radius: 9px;
+}
+[data-testid="stMetric"] { padding: 1rem; border: 1px solid #D8DFE6; border-top: 3px solid #3475AD; height: 100%; }
+[data-testid="stMetricLabel"], [data-testid="stMetricValue"] { color: #151515; overflow-wrap: anywhere; }
+[data-testid="stMetricValue"] { font-size: clamp(1.25rem, 2.5vw, 2rem); }
+.st-key-kpi-3 [data-testid="stMetric"] { border-top-color: #1E7548; }
+.st-key-kpi-4 [data-testid="stMetric"],
+.st-key-kpi-5 [data-testid="stMetric"],
+.st-key-kpi-6 [data-testid="stMetric"] { border-top-color: #D32F35; }
+[data-testid="stWidgetLabel"] { color: #151515; }
+input, textarea, [data-baseweb="select"] > div {
+  background-color: #FFFFFF !important; color: #151515 !important;
+  -webkit-text-fill-color: #151515;
+}
+input::placeholder, textarea::placeholder { color: #596574 !important; opacity: 1; }
+[data-baseweb="input"], [data-baseweb="textarea"], [data-baseweb="select"] > div { border-color: #8795A3; }
+[data-baseweb="popover"], [role="listbox"], [role="option"] { color: #151515; background-color: #FFFFFF; }
+button[kind="secondary"], [data-testid="stFileUploaderDropzone"] button {
+  color: #245C88; border-color: #8795A3; background: #FFFFFF;
+}
+button[kind="primary"] { background: #3475AD; border-color: #3475AD; color: #FFFFFF; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #3475AD; outline-offset: 3px; }
+button:disabled { opacity: 1; color: #596574; background: #E8EDF2; border-color: #B5C0CB; }
+[class*="st-key-withdraw_"] button:not(:disabled) { color: #A32026; background: #FFFFFF; border-color: #D32F35; }
+[class*="st-key-replenish_"] button:not(:disabled) { color: #1E7548; background: #FFFFFF; border-color: #1E7548; }
+[data-testid="stAlertContainer"] { color: #151515; }
+[data-testid="stAlertContainer"] { border-radius: 8px; }
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentWarning"]),
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentError"]) {
+  background: #FCECED; border-left: 4px solid #D32F35; color: #8D1D22;
+}
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentInfo"]) {
+  background: #E6EFF7; border-left: 4px solid #3475AD; color: #245C88;
+}
+[data-testid="stDataFrame"], [data-testid="stVegaLiteChart"] {
+  background: #FFFFFF; border: 1px solid #D8DFE6; border-radius: 8px; padding: .35rem;
+}
+[data-testid="stJson"], [data-testid="stCode"] { background: #FFFFFF; color: #151515; border-radius: 8px; }
+[data-testid="stMarkdownContainer"] a { color: #245C88; text-decoration: underline; }
+@media (max-width: 768px) {
+  .block-container { padding: 4.5rem 1rem 2rem; }
+  .sb-brand { padding: 1.1rem; }
+  [data-testid="stHorizontalBlock"] { flex-wrap: wrap; gap: .8rem; }
+  [data-testid="stColumn"] { min-width: min(100%, 260px) !important; flex: 1 1 260px !important; }
+  [data-testid="stButton"] button, [data-testid="stDownloadButton"] button { width: 100%; min-height: 44px; white-space: normal; }
+}
+
+[data-testid="stAlertContentWarning"] p, [data-testid="stAlertContentError"] p { color: #8D1D22; }
+[data-testid="stAlertContentInfo"] p { color: #245C88; }
+[data-testid="stAlertContainer"]:has([data-testid="stAlertContentSuccess"]) { background: #EDF7F0; border-left: 4px solid #1E7548; }
+[data-testid="stAlertContentSuccess"] p { color: #1E7548; }
+/* Streamlit aplica opacidade de 60% às legendas; neutralizar para manter contraste. */
+[data-testid="stCaptionContainer"] { opacity: 1; }
+
+[class*="st-key-material-card-"] { background: #FFFFFF; border-radius: 9px; }
+[data-testid="stMetricValue"], [data-testid="stMetricValue"] > div { white-space: normal; text-overflow: clip; overflow-wrap: anywhere; }
+[data-testid="stJson"] span { color: #151515 !important; }

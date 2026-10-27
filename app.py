@@ -5,14 +5,13 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 from smartbins.core import System, EMPLOYEES, UNCONFIRMED
+from smartbins.presentation import bars, readings_chart
 
 st.set_page_config(page_title='Smart Bins | Gestão de estoques',page_icon='📦',layout='wide')
-st.markdown('''<style>.stApp{background:#f4f7fb}h1,h2,h3{color:#123c60}
-[data-testid="stMetric"]{background:white;padding:15px;border-radius:9px;border-top:3px solid #168ab5}
-[data-testid="stSidebar"]{background:#e7eef5}</style>''',unsafe_allow_html=True)
+st.markdown('<style>'+ (Path(__file__).parent/'assets/theme.css').read_text() +'</style>',unsafe_allow_html=True)
 s = System()
-st.sidebar.title('📦 SMART BINS')
-st.sidebar.caption('GESTÃO INDUSTRIAL • PROTÓTIPO')
+st.sidebar.title('SMART BINS')
+st.sidebar.caption('GESTÃO INDUSTRIAL • PROVA DE CONCEITO')
 page = st.sidebar.radio('Navegação',['Visão geral','Almoxarifado inteligente','Simulação ESP32','Integração SAP','Histórico de movimentações','Indicadores e acuracidade'])
 st.sidebar.info('ESP32 → Middleware → SAP\n\nTodos os dispositivos, pessoas e documentos são simulados.')
 if st.sidebar.checkbox('Confirmar restauração completa'):
@@ -20,8 +19,15 @@ if st.sidebar.checkbox('Confirmar restauração completa'):
         s.reset()
         st.session_state.pop('last_payload',None)
         st.rerun()
-st.title(page)
-st.caption('SMART BINS | ESP32 + SAP • Demonstração acadêmica • horários em UTC')
+st.markdown("""<section class="sb-brand" aria-label="Identificação do projeto">
+<h1>SMART BINS</h1>
+<p class="sb-subtitle">Sistema Inteligente de Monitoramento de Estoques</p>
+<p class="sb-context">Prova de Conceito Computacional | Estudo de Caso Industrial</p>
+<p class="sb-notice">Ambiente demonstrativo — sensores ESP32, rastreamento e integração SAP simulados.<br>
+Protótipo acadêmico independente; não é um software oficial da SMS Group.</p>
+</section>""", unsafe_allow_html=True)
+st.header(page)
+st.caption('GESTÃO DE ESTOQUES • Horários em UTC')
 materials = s.materials()
 events = s.events()
 registered = [e for e in events if e['status']=='REGISTRADO']
@@ -55,7 +61,8 @@ if page=='Visão geral':
               ('Abaixo do mínimo',sum(m['stock']<m['minimum'] for m in materials))]
     cols = st.columns(4)
     for i,(label,value) in enumerate(values):
-        cols[i%4].metric(label,value)
+        with cols[i%4].container(key='kpi-'+str(i)):
+            st.metric(label,value)
     st.subheader('Roteiros para apresentação')
     st.info('Cada cenário restaura o banco antes de executar. O cenário D permanece pendente até recuperar o SAP na página Integração SAP.')
     confirm = st.checkbox('Autorizo restaurar os dados ao executar um cenário')
@@ -70,7 +77,7 @@ if page=='Visão geral':
 elif page=='Almoxarifado inteligente':
     for i,m in enumerate(materials):
         col = st.container()
-        with col,st.container(border=True):
+        with col,st.container(border=True,key=f'material-card-{i}'):
             picture(m)
             st.subheader(m['name'])
             st.caption(f"{m['code']} • {m['bin']} • {m['location']}")
@@ -128,7 +135,7 @@ elif page=='Simulação ESP32':
     st.caption(f"Critério: amplitude das últimas 3 amostras ≤ {m['tolerance']} g. Tara: {m['tare']} g. Limite de alteração: {m['threshold']} g.")
     cols = st.columns(3)
     for i,(label,units) in enumerate([('Retirar 1 unidade',-1),('Retirar 5 unidades',-5),('Retirar 10 unidades',-10),('Repor 5 unidades',5),('Repor 10 unidades',10),('Repor 20 unidades',20)]):
-        if cols[i%3].button(label):
+        if cols[i%3].button(label,key=('withdraw_' if units<0 else 'replenish_')+str(abs(units))):
             run_action(lambda: s.simulate(code,units))
     if st.button('Simular instabilidade'):
         run_action(lambda: s.simulate(code,unstable=True))
@@ -141,7 +148,7 @@ elif page=='Simulação ESP32':
         run_action(lambda: s.simulate(code))
     p = st.session_state.get('last_payload')
     if p:
-        st.line_chart(pd.DataFrame({'Massa bruta (g)':p['readings']}))
+        readings_chart(p['readings'])
         st.write('Estável:',p['stable'])
         st.code(f"Δm = {p['current_weight']:.4f} − {p['previous_weight']:.4f} = {p['current_weight']-p['previous_weight']:.4f} g")
     st.subheader('Rastreabilidade de Movimentações')
@@ -189,21 +196,22 @@ elif page=='Histórico de movimentações':
         frame = pd.DataFrame(events).drop(columns=['payload'])
         frame = frame.rename(columns={'time':'Data e hora UTC','material':'Material','kind':'Tipo','quantity':'Quantidade','employee':'Funcionário','confidence':'Confiança','status':'Integração','document':'Documento SAP','error':'Alerta'})
         frame['Caixa'] = [json.loads(e['payload'])['bin_id'] for e in events]
-        st.dataframe(frame,width='stretch',hide_index=True)
+        st.dataframe(frame.style.map(lambda v: 'color: #1E7548; background-color: #EDF7F0; font-weight: bold' if v=='ENTRADA' else ('color: #A32026; background-color: #FCECED; font-weight: bold' if v=='SAÍDA' else ''),subset=['Tipo']),width='stretch',hide_index=True)
         st.download_button('Exportar histórico CSV',frame.to_csv(index=False).encode('utf-8-sig'),'historico.csv','text/csv')
     else:
         st.info('Nenhum evento registrado.')
 else:
     st.subheader('Resultados da simulação')
-    st.bar_chart(pd.DataFrame([{'Material':m['name'],'Saldo SAP':m['stock'],'Mínimo':m['minimum']} for m in materials]).set_index('Material'))
+    bars(pd.DataFrame([{'Material':m['name'],'Saldo SAP':m['stock'],'Mínimo':m['minimum']} for m in materials]).set_index('Material'),color=['#3475AD','#D32F35'])
     if registered:
         df = pd.DataFrame(registered)
         st.subheader('Entradas e saídas por material (unidades)')
-        st.bar_chart(df.pivot_table(index='material',columns='kind',values='quantity',aggfunc='sum',fill_value=0))
+        movements = df.pivot_table(index='material',columns='kind',values='quantity',aggfunc='sum',fill_value=0)
+        bars(movements,color=['#1E7548' if kind=='ENTRADA' else '#D32F35' for kind in movements.columns])
         st.subheader('Frequência de movimentações por hora (UTC)')
         df['Hora'] = pd.to_datetime(df['time'],utc=True).dt.floor('h')
-        st.bar_chart(df.groupby('Hora').size().rename('Movimentações'))
-    st.bar_chart(pd.DataFrame({'Eventos':[len(registered),len(pending)]},index=['Processados','Pendentes']))
+        bars(df.groupby('Hora').size().rename('Movimentações'),color='#3475AD')
+    bars(pd.DataFrame({'Processados':[len(registered)],'Pendentes':[len(pending)]},index=['Eventos']),color=['#1E7548','#D32F35'])
     for m in materials:
         if m['stock']<m['minimum']:
             st.warning(m['name']+': abaixo do estoque mínimo')
