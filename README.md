@@ -4,7 +4,7 @@ Protótipo acadêmico funcional em português para demonstrar movimentações de
 
 ## Instalação e execução
 
-Python 3.11 ou 3.12 recomendado. Execute na pasta do projeto:
+Python 3.12 e 3.14 foram testados com as dependências fixadas abaixo. Não é necessário trocar o Python 3.14 por 3.12 no Streamlit Community Cloud. Execute na pasta do projeto:
 
 ```bash
 python -m venv .venv
@@ -13,6 +13,7 @@ source .venv/bin/activate
 # Windows PowerShell (em vez do comando anterior):
 # .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+python -c "import altair as alt; print('Altair importado:', alt.__version__)"
 python -m streamlit run app.py
 ```
 
@@ -40,7 +41,8 @@ SMS/
 │   └── theme.css            # Identidade visual e ajustes responsivos
 ├── tests/
 │   ├── test_core.py         # Cinco cenários e regras de segurança
-│   └── test_ui.py           # Execução das seis páginas e cenário pela interface
+│   ├── test_ui.py           # Execução das seis páginas e cenário pela interface
+│   └── test_dependency_import.py # Importação Altair em processo novo
 └── data/                    # Gerado localmente e ignorado pelo Git
 ```
 
@@ -127,3 +129,23 @@ A interface utiliza a paleta aproximada fornecida para o estudo de caso: vermelh
 O tema claro está em `.streamlit/config.toml` e os ajustes visuais em `assets/theme.css`. Preserve esses arquivos ao copiar ou exportar o projeto e execute o Streamlit na raiz do repositório para carregar a configuração. Cartões, campos e tabelas usam superfícies claras com texto escuro; a navegação se recolhe e os indicadores/botões se reorganizam em telas estreitas. As tabelas mantêm rolagem interna para preservar todas as colunas.
 
 A revisão foi conferida em Chromium nas seis páginas, em larguras de 1440 e 390 pixels, incluindo cadastro expandido, histórico preenchido e cenários simulados em banco temporário. Os 15 testes funcionais existentes passaram. Essa conferência não substitui testes de acessibilidade completos em todos os navegadores e dispositivos.
+
+
+## Compatibilidade Python 3.14 / Streamlit Community Cloud
+
+A combinação antiga (`streamlit==1.50.0`, `altair==5.5.0`, `pandas==2.3.3`, sem versão explícita de `typing_extensions`) falha no Python 3.14 ao importar Altair: `TypeError: _TypedDictMeta.__new__() got an unexpected keyword argument 'closed'`. O Altair 5.5.0 utiliza o `TypedDict` nativo nesse Python, incompatível com o argumento usado em seus schemas. Atualizar somente `typing_extensions` não corrige esse caminho de importação; a falha foi reproduzida inclusive com a versão 4.16.0.
+
+A correção mantém os gráficos e altera somente as dependências:
+
+| Biblioteca | Versão fixada | Motivo |
+|---|---|---|
+| Streamlit | 1.52.2 | Declara suporte ao Python 3.14 e permite Altair 6; o 1.50.0 exige Altair < 6 |
+| Altair | 6.0.0 | Declara suporte ao Python 3.14 e usa o backport compatível de TypedDict |
+| typing_extensions | 4.15.0 | Backport estável com suporte ao Python 3.14, fixado explicitamente |
+| pandas | 2.3.3 | Mantido, compatível com os dois runtimes testados |
+
+As versões foram conferidas nos metadados oficiais do PyPI, são releases estáveis e não retiradas (yanked). Não há monkey patch de `typing`, edição de bibliotecas instaladas ou remoção de gráficos.
+
+Validação realizada em ambientes separados com Python **3.14.0**, **3.14.8** e **3.12.14**: importação explícita de Altair e do módulo de apresentação em processo novo, validação do schema do gráfico, verificação das dependências e **16 testes aprovados por runtime** (os 15 testes existentes mais uma regressão de importação). Um servidor Streamlit real em Python 3.14.0 respondeu à saúde e executou as seis páginas no Chromium. Foram renderizados o gráfico das leituras e os quatro gráficos de indicadores, sem exceções Streamlit ou JavaScript. Os cenários A e B também foram acionados pelo navegador. Todas as verificações usaram bancos temporários, sem alterar o banco da demonstração.
+
+No Community Cloud, mantenha o repositório `raquelpb01-droid/SMS`, branch `main`, arquivo principal `app.py` e Python 3.14. A atualização do `requirements.txt` precisa ser instalada pelo serviço antes de a correção aparecer. Aguarde a reconstrução automática; caso o serviço continue mostrando o ambiente antigo, utilize **Reboot app** no gerenciamento da aplicação e acompanhe os logs de instalação. Esta validação ocorreu no ambiente de desenvolvimento; a reconstrução da instância hospedada deve ser confirmada nos logs do próprio Community Cloud. Não é necessário reimplantar para escolher Python 3.12.
